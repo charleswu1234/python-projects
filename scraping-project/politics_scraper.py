@@ -20,15 +20,13 @@ for d in div:
 ## Dictionary of number of times word is repeated in titles
 dic = {}
 for title in titles:
-    words_symbols = title.split(' ')
-    print(words_symbols)
-    for word_symbol in words_symbols:
-        word = re.sub("[^a-zA-Z]+", "", word_symbol)
-        word = word.lower()
-        word_list = [word if word != '']
-        if word in dic.keys() & word != '':
+    words_numbers = re.sub("[!:/(),.]", " ", title)
+    words_numbers_list = words_numbers.split(' ')
+    for word_number in words_numbers_list:
+        word = word_number.lower()
+        if (word in dic.keys()) and (word):
             dic[word] += 1
-        elif word not in dic.keys() & word != '':
+        elif (word not in dic.keys()) and (word):
             dic[word] = 1
 
 ## Finding most used word
@@ -37,7 +35,6 @@ keys = list(dic.keys())
 values = list(dic.values())
 values_unique = np.unique(np.array(values))
 values_unique_sorted = values_unique[::-1]
-print(values_unique_sorted)
 for i in values_unique_sorted:
     keys = [k for k, v in dic.items() if v == i]
     for key in keys:

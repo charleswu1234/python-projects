@@ -1,15 +1,22 @@
 ## Importing data
 import numpy as np
-import scrapy
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 import re
 import requests
 from bs4 import BeautifulSoup
 
-## Information needed
+## Information needed and initial setup
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
 url = 'https://reddit.com/r/politics/'
 source = requests.get(url, headers = headers)
 soup = BeautifulSoup(source.text, 'html.parser')
+options = Options()
+options.add_argument("--headless")
+driver = webdriver.Chrome('/Users/charlie/Desktop/chromedriver', options = options)
+
+## Scrolling so we have enough data
+
 
 ## Filtering through data
 div = soup.find_all('div', class_ = 'y8HYJ-y_lTUHkQIc1mdCq _2INHSNB8V5eaWp4P0rY_mE')

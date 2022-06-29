@@ -1,33 +1,40 @@
 ## Importing data
-import numpy as np
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+import time
+import numpy as np
 import re
-import requests
 from bs4 import BeautifulSoup
 
 ## Information needed and initial setup
 headers = {'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'}
 url = 'https://reddit.com/r/politics/'
-source = requests.get(url, headers = headers)
-soup = BeautifulSoup(source.text, 'html.parser')
 options = Options()
 options.add_argument("--headless")
-driver = webdriver.Chrome('/Users/charlie/Desktop/chromedriver', options = options)
+options.add_argument("window-size = 1920,1080")
+s = Service('/Users/charlie/Desktop/chromedriver')
+driver = webdriver.Chrome(service = s, options = options)
+page_length = driver.execute_script("return window.screen.height;")
 
 ## Scrolling so we have enough data
-
-
-## Filtering through data
-div = soup.find_all('div', class_ = 'y8HYJ-y_lTUHkQIc1mdCq _2INHSNB8V5eaWp4P0rY_mE')
-titles = []
-for d in div:
-    titles.append(d.a.text)
+length = 0
+i = 1
+driver.get(url)
+while length <= 50:
+    soup = BeautifulSoup(driver.page_source, 'lxml')
+    titles = soup.find_all('h3', class_ = '_eYtD2XCVieq6emjKBH3m')
+    length = len(titles)
+    driver.execute_script(f"window.scrollTo(0,{page_length}*{i});")
+    i += 1
+    time.sleep(1)
 
 ## Dictionary of number of times word is repeated in titles
 dic = {}
 for title in titles:
-    words_numbers = re.sub("[!:/(),.]", " ", title)
+    words_numbers = re.sub("[!:/(),.]", " ", title.text)
     words_numbers_list = words_numbers.split(' ')
     for word_number in words_numbers_list:
         word = word_number.lower()
